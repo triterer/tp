@@ -14,6 +14,10 @@ public class main {
 		System.out.println("url clan: "+urlparse("https://edabit.com?a=1&b=2&a=2", del));
 		System.out.println("tags: "+ Arrays.toString(get_tags("Hey Parents, Surprise, Fruit Juice Is Not Fruit")));
 		System.out.println("ulan ude: "+ ulan(4));
+		System.out.println("non rep: "+ nonrepeat("abcabcbb"));
+		System.out.println("ROM:  "+ toRom(15));
+		System.out.println("formula:  "+ Formula("6 * 4 =24"));
+		System.out.println("palindrome:  "+ isPalindromeDesc(11211230));
 	}
 	
 	public static int Formula(int n) {
@@ -227,4 +231,135 @@ public class main {
 		return ret ;
 	}
 	
+	public static String nonrepeat(String in) {
+		String saved = "";
+		String current = "";
+		for (char c:in.toCharArray()) {
+			if(!current.contains(""+c)) {
+				current+=""+c;
+			}
+			else {
+				if (current.length()>saved.length()) {
+					saved = current;
+					current = "";
+				}
+			}
+		}
+		if (current.length()>saved.length())
+			saved = current;
+		return saved;
+	}
+	
+	public static String toRom(int in) {
+		String ret = "";
+		ret = ret.concat(repeat(in/1000, "M"));
+		ret = ret.concat(chooser((in/100)%10, "D","C"));
+		ret = ret.concat(chooser((in/10)%10, "L","X"));
+		ret = ret.concat(chooser(in%10, "V","I"));
+		
+		return ret;	
+	}
+	
+	public static String chooser(int num, String high, String low) {
+		String ret = "";
+		if(num>5)
+			ret = ret.concat(high).concat(repeat(num-5, low));
+		else if(num==5)
+			ret = ret.concat(high);
+		else if(num==4)
+			ret = ret.concat(low).concat(high);
+		else
+			ret = ret.concat(repeat(num, low));
+		
+		return ret;
+	}
+	
+	public static String repeat(int num, String letter) {
+		String ret = "";
+		
+		for(int i = 1;i<=num;i++)
+			ret = ret.concat(letter);
+		
+		return ret;
+	}
+	
+	public static boolean Formula(String form) {
+		String[] blocks = form.split("=");
+		int[] block_result = new int[blocks.length];
+		int current_block = 0;
+		String next_action = "+";
+		for(int i = 0; i<blocks.length;i++) {
+			block_result[i]=0;
+		}
+		for(String block : blocks) {
+			String[] elements = block.split(" ");
+			for(String element : elements) {
+				if(isDigit(element)) {
+					if(next_action.equals("+")) 
+						block_result[current_block] = block_result[current_block]+Integer.parseInt(element);
+					else if(next_action.equals("-"))
+						block_result[current_block] = block_result[current_block]-Integer.parseInt(element);
+					else if(next_action.equals("*"))
+						block_result[current_block] = block_result[current_block]*Integer.parseInt(element);
+					else if(next_action.equals("/"))
+						block_result[current_block] = block_result[current_block]/Integer.parseInt(element);
+					else
+						return false;
+					//next_action = "";
+				}
+				else 
+					next_action = element;
+				
+			}
+			current_block++;
+			next_action = "+";
+		}
+		
+		for(int i = 0; i<blocks.length-1;i++) {
+			if(block_result[i]!=block_result[i+1])
+				return false;
+		}
+		return true;
+	}
+	
+	public static boolean isDigit(String st) {
+		try {
+			int num = Integer.parseInt(st);
+			return true;
+		}
+		catch(Exception e) {
+			return false;
+		}
+	}
+	
+	public static boolean isPalindromeDesc(long num) {
+		String num_str = String.valueOf(num);
+		if (isPalindrome(num)){
+			return true;
+		}
+		else if(num_str.length()>1) {
+			String next_num = "";
+			for(int i = 0; i<num_str.length()-1;i+=2) {
+				int fir = Integer.parseInt(num_str.substring(i,i+1));
+				int sec = Integer.parseInt(num_str.substring(i+1,i+2));
+				next_num = next_num.concat(String.valueOf(fir+sec));
+			}
+			return isPalindromeDesc(Long.parseLong(next_num));
+		}
+		return false;
+	}
+	
+	public static boolean isPalindrome(long num) {
+		int nl = String.valueOf(num).length();
+		String first_part = String.valueOf(num).substring(0, nl/2);
+		String second_part = String.valueOf(num).substring(nl/2, nl);
+		String revert = "";
+		if (num < 2)
+			return false;
+		for(int i = nl/2-1; i>0; i--)
+			revert = revert.concat(""+second_part.charAt(i));
+		if(first_part.equals(revert))
+			return true;
+		return false;
+	}
 }
